@@ -54,7 +54,7 @@ data Name =
     { _author :: !Text
     , _project :: !Text
     }
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Show)
 
 
 data Package =
@@ -70,8 +70,7 @@ data Package =
 
 
 isKernel :: Name -> Bool
-isKernel (Name author _) =
-  author == "elm" || author == "elm-explorations"
+isKernel _ = True 
 
 
 toString :: Name -> String

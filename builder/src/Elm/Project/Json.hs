@@ -104,17 +104,8 @@ defaultSummary =
 
 
 isPlatformPackage :: Project -> Bool
-isPlatformPackage project =
-  case project of
-    App _ ->
-      False
-
-    Pkg info ->
-      let
-        (Pkg.Name author _) =
-          _pkg_name info
-      in
-      author == "elm" || author == "elm-explorations"
+isPlatformPackage project = 
+  True
 
 
 getName :: Project -> Name

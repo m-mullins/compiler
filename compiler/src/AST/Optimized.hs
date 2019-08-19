@@ -69,7 +69,7 @@ data Expr
 
 
 data Global = Global ModuleName.Canonical N.Name
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 
 -- Provide "List" not "Elm.Kernel.List"
@@ -162,6 +162,7 @@ data EffectsType = Cmd | Sub | Fx
 
 data KContent =
   KContent [KChunk] (Set.Set Global)
+  deriving (Show)
 
 
 data KChunk
@@ -173,6 +174,7 @@ data KChunk
   | JsEnum Int
   | Debug
   | Prod
+  deriving (Show)
 
 
 

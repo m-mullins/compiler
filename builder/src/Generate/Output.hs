@@ -16,6 +16,7 @@ import Control.Concurrent.MVar (MVar, putMVar)
 import Control.Monad.Trans (liftIO)
 import qualified Data.ByteString.Builder as B
 import qualified Data.Map as Map
+import qualified Data.List as List
 import Data.Monoid ((<>))
 import qualified System.Directory as Dir
 import qualified System.FilePath as FP
@@ -191,10 +192,13 @@ replRecovery =
 
 
 organize :: Summary.Summary -> Crawl.Result -> Task.Task Obj.Graph
-organize (Summary.Summary root _ _ _ deps) (Crawl.Graph _ locals _ _ _) =
+organize (Summary.Summary root _ _ _ deps) (Crawl.Graph _ locals kernels _ _) =
   do  localObjs <- Obj.unions <$> traverse (loadModuleObj root) (Map.keys locals)
       foreignObjs <- Obj.unions <$> traverse loadPackageObj (Map.toList deps)
-      return (Obj.union localObjs foreignObjs)
+      let
+        graph =  (Obj.union localObjs foreignObjs)
+        withKerns = List.foldr (\p (Obj.Graph m g f) -> Obj.Graph m (Map.insert (Obj.toGlobal $ fst p) (Obj.toNode $ snd p) g) f) graph (Map.toList kernels)
+      return (withKerns)
 
 
 loadModuleObj :: FilePath -> Module.Raw -> Task.Task Obj.Graph

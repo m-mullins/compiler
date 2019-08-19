@@ -3,8 +3,10 @@ module Elm.Compiler.Objects
   ( JS.Output(..)
   , JS.generate
   , JS.generateForRepl
-  , Opt.Graph
+  , Opt.Graph(..)
   , empty
+  , toGlobal
+  , toNode
   , union
   , unions
   , Kernel(..)

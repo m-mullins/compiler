@@ -1038,18 +1038,18 @@ generateMain mode home main =
   case main of
     Opt.Static ->
       JS.Ref (Name.fromKernel N.virtualDom "init")
-        # JS.Ref (Name.fromGlobal home "main")
-        # JS.Int 0
-        # JS.Int 0
+        %^ JS.Ref (Name.fromGlobal home "main")
+        %^ JS.Int 0
+        %^ JS.Int 0
 
     Opt.Dynamic msgType decoder ->
       JS.Ref (Name.fromGlobal home "main")
-        # generateJsExpr mode decoder
-        # toDebugMetadata mode msgType
+        %^ generateJsExpr mode decoder
+        %^ toDebugMetadata mode msgType
 
 
-(#) :: JS.Expr -> JS.Expr -> JS.Expr
-(#) func arg =
+(%^) :: JS.Expr -> JS.Expr -> JS.Expr
+(%^) func arg =
   JS.Call func [arg]
 
 

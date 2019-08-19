@@ -59,14 +59,14 @@ run () (Flags maybePort) =
 config :: Int -> Config Snap a
 config port =
   defaultConfig
-    # setVerbose False
-    # setPort port
-    # setAccessLog ConfigNoLog
-    # setErrorLog ConfigNoLog
+    %^ setVerbose False
+    %^ setPort port
+    %^ setAccessLog ConfigNoLog
+    %^ setErrorLog ConfigNoLog
 
 
-(#) :: a -> (a -> b) -> b
-(#) value func =
+(%^) :: a -> (a -> b) -> b
+(%^) value func =
   func value
 
 

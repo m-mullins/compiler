@@ -139,7 +139,7 @@ isExposed name exposed =
 
 
 makeImports :: Project -> Plan.Info -> Dict Module.Canonical
-makeImports project (Plan.Info _ _ _ clean dirty foreign) =
+makeImports project (Plan.Info _ _ _ clean dirty foreign2) =
   let
     pkgName =
       Project.getName project
@@ -153,7 +153,7 @@ makeImports project (Plan.Info _ _ _ clean dirty foreign) =
     Map.fromList $
       map mkLocal clean
       ++ map mkLocal dirty
-      ++ map mkForeign foreign
+      ++ map mkForeign foreign2
 
 
 

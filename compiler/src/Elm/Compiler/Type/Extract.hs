@@ -10,6 +10,7 @@ module Elm.Compiler.Type.Extract
 
 
 import Data.Map ((!))
+import qualified Data.Map as Map
 import qualified Data.Maybe as Maybe
 import qualified Data.Set as Set
 
@@ -121,10 +122,16 @@ extractTransitive interfaces (Deps seenAliases seenUnions) (Deps nextAliases nex
 extractAlias :: I.Interfaces -> Opt.Global -> Extractor T.Alias
 extractAlias interfaces (Opt.Global home name) =
   let
-    (I.Interface _ _ aliases _) = interfaces ! home
-    (Can.Alias args aliasType) = I.toAliasInternals (aliases ! name)
+    pname = toPublicName home name
+    maybeAliases = I._aliases <$> Map.lookup home interfaces
   in
-  T.Alias (toPublicName home name) args <$> extract aliasType
+    case Map.lookup name =<< maybeAliases of
+       Just alias ->
+         case I.toAliasInternals alias of
+           Can.Alias args aliasType ->
+             T.Alias pname args <$> extract aliasType             
+       Nothing ->
+         return $ T.Alias pname [] T.Unit
 
 
 extractUnion :: I.Interfaces -> Opt.Global -> Extractor T.Union
@@ -134,11 +141,15 @@ extractUnion interfaces (Opt.Global home name) =
     else
       let
         pname = toPublicName home name
-        unions = I._unions (interfaces ! home)
+        maybeUnions = I._unions <$> Map.lookup home interfaces
       in
-      case I.toUnionInternals (unions ! name) of
-        Can.Union vars ctors _ _ ->
-          T.Union pname vars <$> traverse extractCtor ctors
+      case Map.lookup name =<< maybeUnions of
+        Just union ->
+          case I.toUnionInternals union of
+            Can.Union vars ctors _ _ ->
+              T.Union pname vars <$> traverse extractCtor ctors
+        Nothing ->
+          return $ T.Union pname [] []
 
 
 extractCtor :: Can.Ctor -> Extractor (N.Name, [T.Type])
