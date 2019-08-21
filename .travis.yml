@@ -23,7 +23,8 @@ matrix:
               file: "binary-for-linux.tar.gz"
               draft: true
               skip_cleanup: true
-              all_branches: true
+              on:
+                  all_branches: true
 
         - env: BUILD=mac
           compiler: ": #stack mac"
@@ -36,7 +37,8 @@ matrix:
               file: "binary-for-mac.tar.gz"
               draft: true
               skip_cleanup: true
-              all_branches: true
+              on:
+                  all_branches: true
 
         #- env: BUILD=win
         #  compiler: ": #stack windows"
