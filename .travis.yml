@@ -33,9 +33,9 @@ before_install:
 
 install:
 # Build dependencies
-- stack --no-terminal --install-ghc build --only-dependencies
+- stack init && stack --no-terminal --install-ghc build --only-dependencies
 
 script:
 # Build the package, its tests, and its docs and run the tests
-- stack --no-terminal build 
+- stack --no-terminal --interleaved-output build 
 
