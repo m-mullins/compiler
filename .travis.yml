@@ -8,6 +8,8 @@ cache:
   - $HOME/.local/bin
   - $TRAVIS_BUILD_DIR/.stack-work
 
+env: TRAVIS_TAG=0.19.0
+
 matrix:
     include:
         - env: BUILD=linux
@@ -49,3 +51,6 @@ install:
 script:
     - echo ">> trying $BUILD stack=$(which stack)"
     - stack --no-terminal build
+    - tar zcvf binary-for-$BUILD.tar.gz -C $(stack path --local-install-root)/bin .
+    - echo ">> zipped? $(ls -1 *.tar.gz)"
+    - echo ">> deploy tag $TRAVIS_TAG"
