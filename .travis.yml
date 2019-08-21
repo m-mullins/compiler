@@ -19,26 +19,27 @@ matrix:
           deploy:
               provider: releases
               api_key:
-                  secure: UKPF96hptHr4br4105TXKmi4v2N7H4toeRMOFAupwUi9Ilbrm+/2h6Cr+qc/2rrv63wQ0GyjhRe6Td8DKE26mDdSB/Ac5f9MQ8Ga519b6WFtPdnZ8g2i0Xc0foI4XsofYEwtLhdqUyfNNzT566najz+TC/RKqsWZaFk73VGoIUI=
+                  secure: JIdzMwmQ7nQ8nBew6FqWdM8FC/dAr6i1w5Kj/9VpBNkU761ce6LlO6MMkSiILGLZXkDp32fmTBkOVz4WXQjnyvTcC8mpCOzk/DC9adq0LNxzymDJIsX4QihLc43/SH+H1GKixx5Zrxco+3obOj0lQJfrk+VFjIRwAYbOX5dx/Fwa136dJApIxeeKLClQKJPQTKa5kc/i6/Rp5RLx+aYWRIHhBuDvWBPs4FX+VgIFSjdMC0Qtuc8vJyaMTOG1LqFw+hLG8VfSIt21uQzgk74I+Vkqx1tNzqzHsT2Zp+2ZZlaS9Q+ZHHduQleZ1grVQs/rrCDGjl36pMWsCbjJmD/rruizISFlKlEJQDBhZAt2sq2nbkHriw1jhF1E13ePpLg+eodGJN5CRHUQeWKlb2UFgWb00+mtxEJydQRw88XglUQWMW9LLbgTypKUQplxeGfQe9sniOdvB8LJqnKRwHPvG8VSqOa1dQEB3uLSCYLbb82l9i1y1hlRX1FpaTkYaNR4Oq2BCWNFdUyKXWlLNeNukkmtgWgF023e6FB6eUTUukwJPx8BvTw/E3r+I0O/vEHnfCXnyvAyGwL/u0kPL0qxfhxS2QFVlRN1rmCutVZbri2OG0PLJOGILPqeO3yAiW9OSLzF5i2K7M02a6I+sfKi06Ry24wbPjj9SiT3UtgWajs=
               file: binary-for-linux.tar.gz
               draft: true
               skip_cleanup: true
               on:
-                  all_branches: true
+                 repo: m-mullins/compiler
+                 all_branches: true
 
-        - env: BUILD=mac
-          compiler: ": #stack mac"
-          language: generic
-          os: osx
-          deploy:
-              provider: releases
-              api_key:
-                  secure: N+OIuVwMA9+2/7Xx/ObYGEa2oNiFv9PCdp+zLplfXpeAfhpoCbmnzPmBh1AlvzDH9743godTrarnbcTwLj+lFeTAtMfU/Y6U+1rl2lCYi5xDuV20Z+KG36m7T+nSkVvWDkHyFNdOQ89rnDrMF0Xc+5TZ0l7tVHzLUbD+/99OKck=
-              file: binary-for-mac.tar.gz
-              draft: true
-              skip_cleanup: true
-              on:
-                  all_branches: true
+        #- env: BUILD=mac
+        #  compiler: ": #stack mac"
+        #  language: generic
+        #  os: osx
+        #  deploy:
+        #      provider: releases
+        #      api_key:
+        #          secure: N+OIuVwMA9+2/7Xx/ObYGEa2oNiFv9PCdp+zLplfXpeAfhpoCbmnzPmBh1AlvzDH9743godTrarnbcTwLj+lFeTAtMfU/Y6U+1rl2lCYi5xDuV20Z+KG36m7T+nSkVvWDkHyFNdOQ89rnDrMF0Xc+5TZ0l7tVHzLUbD+/99OKck=
+        #      file: binary-for-mac.tar.gz
+        #      draft: true
+        #      skip_cleanup: true
+        #      on:
+        #          all_branches: true
 
         #- env: BUILD=win
         #  compiler: ": #stack windows"
