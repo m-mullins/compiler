@@ -36,10 +36,10 @@ matrix:
               draft: true
               skip_cleanup: true
 
-        - env: BUILD=win
-          compiler: ": #stack windows"
-          language: bash
-          os: windows
+        #- env: BUILD=win
+        #  compiler: ": #stack windows"
+        #  language: bash
+        #  os: windows
 
 
 before_install:
