@@ -1,41 +1,31 @@
-# This is the simple Travis configuration, which is intended for use
-# on applications which do not require cross-platform and
-# multiple-GHC-version support. For more information and other
-# options, see:
-#
-# https://docs.haskellstack.org/en/stable/travis_ci/
-#
-# Copy these contents into the root directory of your Github project in a file
-# named .travis.yml
-
-# Choose a build environment
-dist: xenial
-
-# Do not choose a language; we provide our own build tools.
+sudo: false
 language: generic
 
 # Caching so the next build will be fast too.
 cache:
   directories:
+  - $HOME/.ghc
   - $HOME/.stack
+  - $TRAVIS_BUILD_DIR/.stack-work
 
-# Ensure necessary system libraries are present
-addons:
-  apt:
-    packages:
-      - libgmp-dev
+matrix:
+    include:
+        - env: BUILD=linux
+          compiler: ": #stack linux"
+          addons: {apt: {packages: [libgmp-dev]}}
 
-before_install:
-# Download and unpack the stack executable
-- mkdir -p ~/.local/bin
-- export PATH=$HOME/.local/bin:$PATH
-- travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+        - env: BUILD=osx
+          compiler: ": #stack osx"
+          os: osx
+
+        - env: BUILD=win
+          compiler: ": #stack windows"
+          os: windows
+
 
 install:
-# Build dependencies
-- stack init && stack --no-terminal --install-ghc build --only-dependencies
+    - echo ">> trying $BUILD"
+    - if [[ -x $(which uname) ]]; then uname -r; else echo "no uname"; fi
 
 script:
-# Build the package, its tests, and its docs and run the tests
-- stack --no-terminal --interleaved-output build 
-
+    - echo "test? $BUILD"
