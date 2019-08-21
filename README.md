@@ -1,3 +1,6 @@
+# Modified 0.19.0 Elm Compiler 
+* _Allow_ the use of native modules by any packages or applications
+
 # The Elm Compiler
 
 Learn about the Elm programming language at [elm-lang.org](http://elm-lang.org/).

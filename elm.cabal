@@ -25,7 +25,7 @@ Build-type: Simple
 
 source-repository head
     type:     git
-    location: git://github.com/elm-lang/elm-compiler.git
+    location: git://github.com/m-mullins/elm-compiler.git
 
 
 Flag dev {
