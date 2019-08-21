@@ -43,8 +43,9 @@ before_install:
    set +ex
     
 install:
-    - echo ">> trying $BUILD stackbin=$(which stack) win=$(which stack.exe)"
-    - if [[ -x $(which uname) ]]; then uname -r; else echo "no uname"; fi
+    - echo ">> trying only-dependencies $BUILD stack=$(which stack)"
+    - stack --no-terminal --install-ghc build --only-dependencies
 
 script:
-    - echo "test? $BUILD"
+    - echo ">> trying $BUILD stack=$(which stack)"
+    - stack --no-terminal build
