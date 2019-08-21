@@ -19,8 +19,8 @@ matrix:
           deploy:
               provider: releases
               api_key:
-                secure: WRtGKRkLmpQWrXy57oAxu/BOy/VxHzr4PWcTo3j6fqscMVNyistI40wNzQsJJtoedgAR3FK8YV2MbFiftgPvofwpj9EbciWZ1/49iyjoDKvFIRlg0sSYtSqiGQiKCfiLJSYFqlkoWzB7PzJAFfmkFAGjsjQt02uKrl4ysGL/AeM=
-              file: "binary-for-linux.tar.gz"
+                  secure: UKPF96hptHr4br4105TXKmi4v2N7H4toeRMOFAupwUi9Ilbrm+/2h6Cr+qc/2rrv63wQ0GyjhRe6Td8DKE26mDdSB/Ac5f9MQ8Ga519b6WFtPdnZ8g2i0Xc0foI4XsofYEwtLhdqUyfNNzT566najz+TC/RKqsWZaFk73VGoIUI=
+              file: binary-for-linux.tar.gz
               draft: true
               skip_cleanup: true
               on:
@@ -33,8 +33,8 @@ matrix:
           deploy:
               provider: releases
               api_key:
-                secure: WRtGKRkLmpQWrXy57oAxu/BOy/VxHzr4PWcTo3j6fqscMVNyistI40wNzQsJJtoedgAR3FK8YV2MbFiftgPvofwpj9EbciWZ1/49iyjoDKvFIRlg0sSYtSqiGQiKCfiLJSYFqlkoWzB7PzJAFfmkFAGjsjQt02uKrl4ysGL/AeM=
-              file: "binary-for-mac.tar.gz"
+                  secure: N+OIuVwMA9+2/7Xx/ObYGEa2oNiFv9PCdp+zLplfXpeAfhpoCbmnzPmBh1AlvzDH9743godTrarnbcTwLj+lFeTAtMfU/Y6U+1rl2lCYi5xDuV20Z+KG36m7T+nSkVvWDkHyFNdOQ89rnDrMF0Xc+5TZ0l7tVHzLUbD+/99OKck=
+              file: binary-for-mac.tar.gz
               draft: true
               skip_cleanup: true
               on:
