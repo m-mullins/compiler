@@ -16,11 +16,25 @@ matrix:
           compiler: ": #stack linux"
           language: generic
           addons: {apt: {packages: [libgmp-dev]}}
+          deploy:
+              provider: releases
+              api_key:
+                secure: WRtGKRkLmpQWrXy57oAxu/BOy/VxHzr4PWcTo3j6fqscMVNyistI40wNzQsJJtoedgAR3FK8YV2MbFiftgPvofwpj9EbciWZ1/49iyjoDKvFIRlg0sSYtSqiGQiKCfiLJSYFqlkoWzB7PzJAFfmkFAGjsjQt02uKrl4ysGL/AeM=
+              file: "binary-for-linux.tar.gz"
+              draft: true
+              skip_cleanup: true
 
-        - env: BUILD=osx
-          compiler: ": #stack osx"
+        - env: BUILD=mac
+          compiler: ": #stack mac"
           language: generic
           os: osx
+          deploy:
+              provider: releases
+              api_key:
+                secure: WRtGKRkLmpQWrXy57oAxu/BOy/VxHzr4PWcTo3j6fqscMVNyistI40wNzQsJJtoedgAR3FK8YV2MbFiftgPvofwpj9EbciWZ1/49iyjoDKvFIRlg0sSYtSqiGQiKCfiLJSYFqlkoWzB7PzJAFfmkFAGjsjQt02uKrl4ysGL/AeM=
+              file: "binary-for-mac.tar.gz"
+              draft: true
+              skip_cleanup: true
 
         - env: BUILD=win
           compiler: ": #stack windows"
@@ -35,7 +49,7 @@ before_install:
        win)
            choco install haskell-stack
            ;;
-       osx)
+       mac)
            travis_retry curl --insecure -L https://get.haskellstack.org/stable/osx-x86_64.tar.gz | tar xz --strip-components=1 --include '*/stack' -C ~/.local/bin
            ;;
        linux)
@@ -54,3 +68,9 @@ script:
     - tar zcvf binary-for-$BUILD.tar.gz -C $(stack path --local-install-root)/bin .
     - echo ">> zipped? $(ls -1 *.tar.gz)"
     - echo ">> deploy tag $TRAVIS_TAG"
+
+before_deploy:
+    - git config --local user.name "Martin Mullins"
+    - git config --local user.email "martin.mullins942@gmail.com"
+    - export TRAVIS_TAG=0.19.0
+    - git tag -f $TRAVIS_TAG
