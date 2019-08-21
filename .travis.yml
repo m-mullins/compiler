@@ -1,5 +1,4 @@
 sudo: false
-language: generic
 
 # Caching so the next build will be fast too.
 cache:
@@ -12,14 +11,17 @@ matrix:
     include:
         - env: BUILD=linux
           compiler: ": #stack linux"
+          language: generic
           addons: {apt: {packages: [libgmp-dev]}}
 
         - env: BUILD=osx
           compiler: ": #stack osx"
+          language: generic
           os: osx
 
         - env: BUILD=win
           compiler: ": #stack windows"
+          language: bash
           os: windows
 
 
