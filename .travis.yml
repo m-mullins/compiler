@@ -5,6 +5,7 @@ cache:
   directories:
   - $HOME/.ghc
   - $HOME/.stack
+  - $HOME/.local/bin
   - $TRAVIS_BUILD_DIR/.stack-work
 
 matrix:
@@ -25,8 +26,24 @@ matrix:
           os: windows
 
 
+before_install:
+ - |
+   set -ex
+   case "$BUILD" in
+       win)
+           choco install haskell-stack
+           ;;
+       osx)
+           travis_retry curl --insecure -L https://get.haskellstack.org/stable/osx-x86_64.tar.gz | tar xz --strip-components=1 --include '*/stack' -C ~/.local/bin
+           ;;
+       linux)
+           travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+           ;;
+   esac
+   set +ex
+    
 install:
-    - echo ">> trying $BUILD"
+    - echo ">> trying $BUILD stackbin=$(which stack) win=$(which stack.exe)"
     - if [[ -x $(which uname) ]]; then uname -r; else echo "no uname"; fi
 
 script:
