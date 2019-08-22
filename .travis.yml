@@ -1,0 +1,94 @@
+sudo: false
+
+# Caching so the next build will be fast too.
+cache:
+  directories:
+  - $HOME/.ghc
+  - $HOME/.stack
+  - $HOME/.local/bin
+  - $TRAVIS_BUILD_DIR/.stack-work
+  - /c/Users/travis/AppData/Roaming/stack
+
+matrix:
+    include:
+        - env: BUILD=linux
+          compiler: stack linux
+          language: generic
+          addons: {apt: {packages: [libgmp-dev]}}
+          deploy:
+              name: 0.19.1+jsmod
+              provider: releases
+              api_key:
+                  secure: Bp+9vCw44gZiZ4qm8xKS6OCSrEfSx9DJaAmTQyduLvHnZCStEvTmwxF6/bkjU8mJR4OBqpKLq1rEPDTYmpCWWP19QIIXE+953owTh6aIqY/5575X0xwNsqQ3/5CoLexCyizgqJFDTM7w6bpwPn3nqIUCAZDy4+G0BWWaAji7bv7+xJeF1TDLR8uVD5KwtW7H3I6C+P+KA/W9NGvgJW9L7ugltuOAqGUvmesG8gutuiUJ2wDtoEz/jLDuciVDhBe6xKG1JPM6S0jRuKGH1WP6zmDTnHcqW/1dMnqI/Y9s46c390cnb4uRbjxtikvuJJxGxx1hU6UO9d+DdL3ACqPxhlTPl3XQYC0+L7B/AStMnUnbhBvXAorMCKyjZyNEZuHqSrFldBA4ZzsCasgCSLCqjORx1t4i1v3XKsYsT1zQceEqWHPGa8lnp91PJBS+5N3J6ehnmL8N2vt+BKPj29w2IH8kTY8lyG4sjohzivwNgy6KWj4iwXMtgOceYgXHixecfp3xUwUKelWZfk5UWt82EFXa0L8VT3DhFf/OMhkeFjpSshqSd73boDeFhlHlU+4WrD6Xthy2lbTtpc5DVlmLMYsin/rTgBWGhMvr2L7V99/B6UMiGs5ZsdGM2nM8SZXRdW8bNh77mOZjOCutK16Xthrtj5q1bxaormTlCngziFU=
+              file: binary-for-linux.tar.gz
+              overwrite: true
+              skip_cleanup: true
+              on:
+                 tags: true
+                 repo: m-mullins/compiler
+                 all_branches: true
+
+        - env: BUILD=mac
+          compiler: stack mac
+          language: generic
+          os: osx
+          deploy:
+              name: 0.19.1+jsmod
+              provider: releases
+              api_key:
+                  secure: Bp+9vCw44gZiZ4qm8xKS6OCSrEfSx9DJaAmTQyduLvHnZCStEvTmwxF6/bkjU8mJR4OBqpKLq1rEPDTYmpCWWP19QIIXE+953owTh6aIqY/5575X0xwNsqQ3/5CoLexCyizgqJFDTM7w6bpwPn3nqIUCAZDy4+G0BWWaAji7bv7+xJeF1TDLR8uVD5KwtW7H3I6C+P+KA/W9NGvgJW9L7ugltuOAqGUvmesG8gutuiUJ2wDtoEz/jLDuciVDhBe6xKG1JPM6S0jRuKGH1WP6zmDTnHcqW/1dMnqI/Y9s46c390cnb4uRbjxtikvuJJxGxx1hU6UO9d+DdL3ACqPxhlTPl3XQYC0+L7B/AStMnUnbhBvXAorMCKyjZyNEZuHqSrFldBA4ZzsCasgCSLCqjORx1t4i1v3XKsYsT1zQceEqWHPGa8lnp91PJBS+5N3J6ehnmL8N2vt+BKPj29w2IH8kTY8lyG4sjohzivwNgy6KWj4iwXMtgOceYgXHixecfp3xUwUKelWZfk5UWt82EFXa0L8VT3DhFf/OMhkeFjpSshqSd73boDeFhlHlU+4WrD6Xthy2lbTtpc5DVlmLMYsin/rTgBWGhMvr2L7V99/B6UMiGs5ZsdGM2nM8SZXRdW8bNh77mOZjOCutK16Xthrtj5q1bxaormTlCngziFU=
+              file: binary-for-mac.tar.gz
+              overwrite: true
+              name: 0.19.1+jsmod
+              skip_cleanup: true
+              on:
+                  tags: true
+                  repo: m-mullins/compiler
+                  all_branches: true
+
+        - env: BUILD=win
+          compiler: stack windows
+          language: bash
+          os: windows
+          deploy:
+              name: 0.19.1+jsmod
+              provider: releases
+              api_key:
+                  secure: Bp+9vCw44gZiZ4qm8xKS6OCSrEfSx9DJaAmTQyduLvHnZCStEvTmwxF6/bkjU8mJR4OBqpKLq1rEPDTYmpCWWP19QIIXE+953owTh6aIqY/5575X0xwNsqQ3/5CoLexCyizgqJFDTM7w6bpwPn3nqIUCAZDy4+G0BWWaAji7bv7+xJeF1TDLR8uVD5KwtW7H3I6C+P+KA/W9NGvgJW9L7ugltuOAqGUvmesG8gutuiUJ2wDtoEz/jLDuciVDhBe6xKG1JPM6S0jRuKGH1WP6zmDTnHcqW/1dMnqI/Y9s46c390cnb4uRbjxtikvuJJxGxx1hU6UO9d+DdL3ACqPxhlTPl3XQYC0+L7B/AStMnUnbhBvXAorMCKyjZyNEZuHqSrFldBA4ZzsCasgCSLCqjORx1t4i1v3XKsYsT1zQceEqWHPGa8lnp91PJBS+5N3J6ehnmL8N2vt+BKPj29w2IH8kTY8lyG4sjohzivwNgy6KWj4iwXMtgOceYgXHixecfp3xUwUKelWZfk5UWt82EFXa0L8VT3DhFf/OMhkeFjpSshqSd73boDeFhlHlU+4WrD6Xthy2lbTtpc5DVlmLMYsin/rTgBWGhMvr2L7V99/B6UMiGs5ZsdGM2nM8SZXRdW8bNh77mOZjOCutK16Xthrtj5q1bxaormTlCngziFU=
+              file: binary-for-win.tar.gz
+              overwrite: true
+              skip_cleanup: true
+              on:
+                 tags: true
+                 repo: m-mullins/compiler
+                 all_branches: true
+
+
+
+before_install:
+ - |
+   set -ex
+   case "$BUILD" in
+       win)
+           choco install haskell-stack
+           ;;
+       mac)
+           travis_retry curl --insecure -L https://get.haskellstack.org/stable/osx-x86_64.tar.gz | tar xz --strip-components=1 --include '*/stack' -C ~/.local/bin
+           ;;
+       linux)
+           travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+           ;;
+   esac
+   set +ex
+    
+install:
+    - echo ">> trying only-dependencies $BUILD stack=$(which stack)"
+    - stack --no-terminal --install-ghc build --only-dependencies
+
+script:
+    - echo ">> trying $BUILD stack=$(which stack)"
+    - stack --no-terminal build
+    - tar zcvf binary-for-$BUILD.tar.gz -C $(stack path --local-install-root)/bin .
+    - echo ">> zipped? $(ls -1 *.tar.gz)"
+    - echo ">> deploy tag $TRAVIS_TAG"
+
