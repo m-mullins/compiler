@@ -100,7 +100,7 @@ addDefaultHeaders headers =
 {-# NOINLINE userAgent #-}
 userAgent :: BS.ByteString
 userAgent =
-  BS.pack ("elm/" ++ V.toChars V.compiler)
+  BS.pack ("elm/0.19.0") -- ++ V.toChars V.compiler)
 
 
 accept :: BS.ByteString -> Header
