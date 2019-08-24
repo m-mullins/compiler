@@ -58,7 +58,7 @@ data Name =
     { _author :: !Author
     , _project :: !Project
     }
-    deriving (Ord)
+    deriving (Ord,Show)
 
 
 type Author = Utf8.Utf8 AUTHOR
@@ -66,6 +66,12 @@ type Project = Utf8.Utf8 PROJECT
 
 data AUTHOR
 data PROJECT
+
+instance Show Author where
+    show x = "Author"
+
+instance Show Project where
+    show x = "Project"
 
 
 data Canonical =
@@ -82,7 +88,7 @@ data Canonical =
 
 isKernel :: Name -> Bool
 isKernel (Name author _) =
-  author == elm || author == elm_explorations
+  True
 
 
 toChars :: Name -> String

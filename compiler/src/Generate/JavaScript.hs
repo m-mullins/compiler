@@ -11,6 +11,7 @@ import qualified Data.ByteString.Builder as B
 import Data.Monoid ((<>))
 import qualified Data.List as List
 import Data.Map ((!))
+import Debug.Trace
 import qualified Data.Map as Map
 import qualified Data.Name as Name
 import qualified Data.Set as Set
@@ -149,64 +150,69 @@ addGlobal mode graph state@(State revKernels builders seen) global =
 
 
 addGlobalHelp :: Mode.Mode -> Graph -> Opt.Global -> State -> State
-addGlobalHelp mode graph global state =
+addGlobalHelp mode graph global@(Opt.Global n pp) state =
   let
     addDeps deps someState =
       Set.foldl' (addGlobal mode graph) someState deps
   in
-  case graph ! global of
-    Opt.Define expr deps ->
-      addStmt (addDeps deps state) (
-        var global (Expr.generate mode expr)
-      )
+  case Map.lookup global graph of
+    Nothing ->
+      Debug.Trace.trace ("Issues with generating: " ++ (show n) ++ "::" ++ (ModuleName.toChars pp)) state
 
-    Opt.DefineTailFunc argNames body deps ->
-      addStmt (addDeps deps state) (
-        let (Opt.Global _ name) = global in
-        var global (Expr.generateTailDef mode name argNames body)
-      )
+    Just g ->
+      case g of
+        Opt.Define expr deps ->
+          addStmt (addDeps deps state) (
+            var global (Expr.generate mode expr)
+          )
 
-    Opt.Ctor index arity ->
-      addStmt state (
-        var global (Expr.generateCtor mode global index arity)
-      )
+        Opt.DefineTailFunc argNames body deps ->
+          addStmt (addDeps deps state) (
+            let (Opt.Global _ name) = global in
+            var global (Expr.generateTailDef mode name argNames body)
+          )
 
-    Opt.Link linkedGlobal ->
-      addGlobal mode graph state linkedGlobal
+        Opt.Ctor index arity ->
+          addStmt state (
+            var global (Expr.generateCtor mode global index arity)
+          )
 
-    Opt.Cycle names values functions deps ->
-      addStmt (addDeps deps state) (
-        generateCycle mode global names values functions
-      )
+        Opt.Link linkedGlobal@(Opt.Global _ nn) ->
+          addGlobal mode graph state linkedGlobal
 
-    Opt.Manager effectsType ->
-      generateManager mode graph global effectsType state
+        Opt.Cycle names values functions deps ->
+          addStmt (addDeps deps state) (
+            generateCycle mode global names values functions
+          )
 
-    Opt.Kernel chunks deps ->
-      if isDebugger global && not (Mode.isDebug mode) then
-        state
-      else
-        addKernel (addDeps deps state) (generateKernel mode chunks)
+        Opt.Manager effectsType ->
+          generateManager mode graph global effectsType state
 
-    Opt.Enum index ->
-      addStmt state (
-        generateEnum mode global index
-      )
+        Opt.Kernel chunks deps ->
+          if isDebugger global && not (Mode.isDebug mode) then
+            state
+          else
+            addKernel (addDeps deps state) (generateKernel mode chunks)
 
-    Opt.Box ->
-      addStmt (addGlobal mode graph state identity) (
-        generateBox mode global
-      )
+        Opt.Enum index ->
+          addStmt state (
+            generateEnum mode global index
+          )
 
-    Opt.PortIncoming decoder deps ->
-      addStmt (addDeps deps state) (
-        generatePort mode global "incomingPort" decoder
-      )
+        Opt.Box ->
+          addStmt (addGlobal mode graph state identity) (
+            generateBox mode global
+          )
 
-    Opt.PortOutgoing encoder deps ->
-      addStmt (addDeps deps state) (
-        generatePort mode global "outgoingPort" encoder
-      )
+        Opt.PortIncoming decoder deps ->
+          addStmt (addDeps deps state) (
+            generatePort mode global "incomingPort" decoder
+          )
+
+        Opt.PortOutgoing encoder deps ->
+          addStmt (addDeps deps state) (
+            generatePort mode global "outgoingPort" encoder
+          )
 
 
 addStmt :: State -> JS.Stmt -> State

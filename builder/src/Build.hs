@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wno-unused-do-bind #-}
-{-# LANGUAGE BangPatterns, GADTs, OverloadedStrings #-}
+{-# LANGUAGE BangPatterns, GADTs, RecordWildCards, OverloadedStrings #-}
 module Build
   ( fromExposed
   , fromMains
@@ -28,6 +28,7 @@ import Data.Map.Strict ((!))
 import qualified Data.Maybe as Maybe
 import qualified Data.Name as Name
 import qualified Data.NonEmptyList as NE
+import qualified Elm.Kernel as Kernel
 import qualified Data.OneOrMore as OneOrMore
 import qualified Data.Set as Set
 import qualified System.Directory as Dir
@@ -175,11 +176,16 @@ data Artifacts =
     , _modules :: [Module]
     }
 
+instance Show Artifacts where
+    show Artifacts{..} = "Artifacts modules=" ++ (List.intercalate "," $ List.map show _modules)
 
 data Module
   = Fresh ModuleName.Raw I.Interface Opt.LocalGraph
   | Cached ModuleName.Raw Bool (MVar CachedInterface)
 
+instance Show Module where
+    show (Fresh n _ _) = "Fresh " ++ (ModuleName.toChars n)
+    show (Cached n _ _) = "Fresh " ++ (ModuleName.toChars n)
 
 type Dependencies =
   Map.Map ModuleName.Canonical I.DependencyInterface
@@ -249,7 +255,17 @@ data Status
   | SBadImport Import.Problem
   | SBadSyntax FilePath File.Time B.ByteString Syntax.Error
   | SForeign Pkg.Name
-  | SKernel
+  | SKernel [Kernel.Chunk]
+
+instance Show Status where
+    show s =
+        case s of
+            SCached _ -> "SCached"
+            SChanged _ _ _ _-> "SChanged"
+            SBadImport _  -> "SBadImport"
+            SBadSyntax _ _ _ _ -> "SBadSyntax"
+            SForeign _ -> "SForeign"
+            SKernel _ -> "SKernel"
 
 
 crawlDeps :: Env -> MVar StatusDict -> [ModuleName.Raw] -> a -> IO a
@@ -267,8 +283,10 @@ crawlDeps env mvar deps blockedValue =
 
 crawlModule :: Env -> MVar StatusDict -> DocsNeed -> ModuleName.Raw -> IO Status
 crawlModule env@(Env _ root projectType srcDirs buildID locals foreigns) mvar docsNeed name =
+  let
+    pkg = projectTypeToPkg projectType
+  in
   do  let fileName = ModuleName.toFilePath name <.> "elm"
-
       paths <- filterM File.exists (map (`addRelative` fileName) srcDirs)
 
       case paths of
@@ -303,8 +321,26 @@ crawlModule env@(Env _ root projectType srcDirs buildID locals foreigns) mvar do
 
             Nothing ->
               if Name.isKernel name && Parse.isKernel projectType then
-                do  exists <- File.exists ("src" </> ModuleName.toFilePath name <.> "js")
-                    return $ if exists then SKernel else SBadImport Import.NotFound
+                do  let fileNameJs = ModuleName.toFilePath name <.> "js"
+                    paths <- filterM File.exists (map (`addRelative` fileNameJs) srcDirs)
+                    case paths of
+                      [path] ->
+                        -- Build Chunks
+                        do  bytes <- File.readUtf8 path
+                            case Kernel.fromByteString pkg (Map.map (\(Details.Foreign p _) -> p) foreigns) bytes of
+                              Nothing ->
+                                return $ SBadImport Import.NotFound
+  
+                              Just (Kernel.Content imports chunks) ->
+                                -- TODO check imports
+                                return $ SKernel chunks
+  
+                      p1:p2:ps ->
+                        return $ SBadImport $ Import.AmbiguousLocal (FP.makeRelative root p1) (FP.makeRelative root p2) (map (FP.makeRelative root) ps)
+
+                      [] ->
+                        return $ SBadImport Import.NotFound
+
               else
                 return $ SBadImport Import.NotFound
 
@@ -354,8 +390,17 @@ data Result
   | RProblem Error.Module
   | RBlocked
   | RForeign I.Interface
-  | RKernel
+  | RKernel [Kernel.Chunk]
 
+instance Show Result where
+    show (RNew _ _ _ _) = "RNew"
+    show (RSame _ _ _ _) = "RSame"
+    show (RCached _ _ _) = "RCached"
+    show (RNotFound _) = "RNotFound"
+    show (RProblem _) = "RProblem"
+    show (RBlocked) = "RBlocked"
+    show (RForeign _) = "RForeign"
+    show (RKernel _) = "RKernel"
 
 data CachedInterface
   = Unneeded
@@ -427,8 +472,8 @@ checkModule env@(Env _ root projectType _ _ _ _) foreigns resultsMVar name statu
         I.Public iface -> return (RForeign iface)
         I.Private _ _ _ -> error $ "mistakenly seeing private interface for " ++ Pkg.toChars home ++ " " ++ ModuleName.toChars name
 
-    SKernel ->
-      return RKernel
+    SKernel chunks ->
+      return $ RKernel chunks
 
 
 
@@ -478,7 +523,7 @@ checkDepsHelp root results deps new same cached importProblems isBlocked lastDep
             RForeign iface ->
               checkDepsHelp root results otherDeps new ((dep,iface) : same) cached importProblems isBlocked lastDepChange lastCompile
 
-            RKernel ->
+            RKernel _ ->
               checkDepsHelp root results otherDeps new same cached importProblems isBlocked lastDepChange lastCompile
 
 
@@ -645,7 +690,7 @@ addToGraph name status graph =
         SBadImport _                                  -> []
         SBadSyntax _ _ _ _                            -> []
         SForeign _                                    -> []
-        SKernel                                       -> []
+        SKernel  _                                    -> []
   in
   (name, name, dependencies) : graph
 
@@ -693,7 +738,7 @@ checkInside name p1 status =
     SBadImport _                                -> Right ()
     SBadSyntax _ _ _ _                          -> Right ()
     SForeign _                                  -> Right ()
-    SKernel                                     -> Right ()
+    SKernel _                                   -> Right ()
 
 
 
@@ -764,7 +809,7 @@ addNewLocal name result locals =
     RProblem _        -> locals
     RBlocked          -> locals
     RForeign _        -> locals
-    RKernel           -> locals
+    RKernel _         -> locals
 
 
 
@@ -793,7 +838,7 @@ addErrors result errors =
     RProblem e    -> e:errors
     RBlocked      ->   errors
     RForeign _    ->   errors
-    RKernel       ->   errors
+    RKernel _     ->   errors
 
 
 addImportProblems :: Map.Map ModuleName.Raw Result -> ModuleName.Raw -> [(ModuleName.Raw, Import.Problem)] -> [(ModuleName.Raw, Import.Problem)]
@@ -806,7 +851,7 @@ addImportProblems results name problems =
     RProblem _    -> problems
     RBlocked      -> problems
     RForeign _    -> problems
-    RKernel       -> problems
+    RKernel _     -> problems
 
 
 
@@ -864,7 +909,7 @@ toDocs result =
     RProblem _    -> Nothing
     RBlocked      -> Nothing
     RForeign _    -> Nothing
-    RKernel       -> Nothing
+    RKernel _      -> Nothing
 
 
 
@@ -928,7 +973,7 @@ finalizeReplArtifacts env@(Env _ root projectType _ _ _ _) source modul@(Src.Mod
           let
             h = Can._name canonical
             m = Fresh (Src.getName modul) (I.fromModule pkg canonical annotations) objects
-            ms = Map.foldrWithKey addInside [] results
+            ms = Map.foldrWithKey (addInside pkg) [] results
           in
           return $ Right $ ReplArtifacts h (m:ms) (L.fromModule modul) annotations
 
@@ -1137,6 +1182,12 @@ data MainResult
   | ROutsideErr Error.Module
   | ROutsideBlocked
 
+instance Show MainResult where
+  show (RInside name) = "RInside" ++ (ModuleName.toChars name)
+  show (ROutsideOk name _  _) = "ROutside" ++ (ModuleName.toChars name)
+  show (ROutsideErr _) = "ROutsideErr"
+  show (ROutsideBlocked) = "ROutsideBlocked"
+
 
 checkMain :: Env -> ResultDict -> MainStatus -> IO MainResult
 checkMain env@(Env _ root _ _ _ _ _) results pendingMain =
@@ -1199,7 +1250,7 @@ toArtifacts (Env _ root projectType _ _ _ _) foreigns results mainResults =
 
     Right mains ->
       Right $ Artifacts (projectTypeToPkg projectType) foreigns mains $
-        Map.foldrWithKey addInside (foldr addOutside [] mainResults) results
+        Map.foldrWithKey (addInside $ projectTypeToPkg projectType) (foldr addOutside [] mainResults) results
 
 
 gatherProblemsOrMains :: Map.Map ModuleName.Raw Result -> NE.List MainResult -> Either (NE.List Error.Module) (NE.List Main)
@@ -1224,8 +1275,11 @@ gatherProblemsOrMains results (NE.List mainResult mainResults) =
     (ROutsideBlocked , (e:es, _ )) -> Left  (NE.List e es)
 
 
-addInside :: ModuleName.Raw -> Result -> [Module] -> [Module]
-addInside name result modules =
+addInside :: Pkg.Name -> ModuleName.Raw -> Result -> [Module] -> [Module]
+addInside pkgName name result modules =
+  let
+    globalToLocal (Opt.GlobalGraph nodes fields) = Opt.LocalGraph Nothing nodes fields
+  in
   case result of
     RNew  _ iface objs _ -> Fresh name iface objs : modules
     RSame _ iface objs _ -> Fresh name iface objs : modules
@@ -1234,7 +1288,9 @@ addInside name result modules =
     RProblem _           -> error (badInside name)
     RBlocked             -> error (badInside name)
     RForeign _           -> modules
-    RKernel              -> modules
+    RKernel  chunks      -> 
+        Fresh name (I.Interface pkgName Map.empty Map.empty Map.empty Map.empty) (globalToLocal $ Opt.addKernel (Name.getKernel name) chunks $ Opt.GlobalGraph Map.empty Map.empty) : modules
+
 
 
 badInside :: ModuleName.Raw -> [Char]

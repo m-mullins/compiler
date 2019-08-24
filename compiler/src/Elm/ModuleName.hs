@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns, OverloadedStrings, UnboxedTuples #-}
+{-# LANGUAGE BangPatterns, OverloadedStrings, UnboxedTuples, RecordWildCards #-}
 module Elm.ModuleName
   ( Raw
   , toChars
@@ -43,11 +43,9 @@ import Parse.Primitives (Row, Col)
 
 type Raw = Name.Name
 
-
 toChars :: Raw -> String
 toChars =
   Name.toChars
-
 
 toFilePath :: Raw -> FilePath
 toFilePath name =
@@ -133,6 +131,8 @@ data Canonical =
     , _module :: !Name.Name
     }
 
+instance Show Canonical where
+    show Canonical{..} = (Name.toChars _module)
 
 
 -- INSTANCES
