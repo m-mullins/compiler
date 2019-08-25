@@ -4,7 +4,7 @@ const path = require('path');
 const packageInfo = require(path.join(__dirname, 'package.json'));
 // Use major.minor.patch from version string - e.g. "1.2.3" from "1.2.3-alpha"
 // TODO lets do normal versioning
-const binVersion = packageInfo.version.replace(/\-/, '+');
+const binVersion = packageInfo.version.replace(/\-/, '.');
 
 const base = 'https://github.com/m-mullins/compiler/releases/download/' +
         binVersion + '/binary-for-';

@@ -4,6 +4,9 @@
 # Elm compiler + JS modules 
 This build adds javascript modules to the elm compiler
 
+## Install
+- `npm install --save elm-mods`
+
 ## Example
 
 - `elm init`
