@@ -84,7 +84,7 @@ before_install:
 install:
     - echo ">> trying only-dependencies $BUILD stack=$(which stack)"
     - |
-    case "$BUILD" in
+      case "$BUILD" in
         linux)
             pushd docker
             docker build . -t musl-ghc
@@ -92,7 +92,7 @@ install:
         *)
             stack --no-terminal --install-ghc build --only-dependencies
             ;;
-    esac
+      esac
 
 script:
     - echo ">> trying $BUILD stack=$(which stack)"

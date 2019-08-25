@@ -9,8 +9,8 @@
 
 ## Example
 
-1. `elm init`
-1. Create src/Main.elm
+- `elm init`
+- Create `src/Main.elm`
 ```
 module Main exposing(..)
 
@@ -22,7 +22,8 @@ log = Elm.Kernel.JS.log
 
 main = text <| log <| "HelloWorld"
 ```
-1. Create src/Elm/Kernel/JS.js _note:_ the first comment is required (it can be empty)
+- Create `src/Elm/Kernel/JS.js`
+- _note:_ the first comment is required (it can be empty)
 ```
 /*
 
@@ -33,6 +34,7 @@ function _JS_log(s) {
     return s;
 }
 ```
-1. This show now compile `elm make src/Main.elm`
-1. Open the `index.html` and "HelloWorld" should be printed to the console
-1 The best place to see more js module examples is the [elm/core](https://github.com/elm/core/tree/1.0.2/src/Elm/Kernel) library.
+- Compile `elm make src/Main.elm`
+- Open `index.html`
+    - "HelloWorld" should be printed to the console and on the page
+- More js module examples are here [elm/core](https://github.com/elm/core/tree/1.0.2/src/Elm/Kernel) library.
