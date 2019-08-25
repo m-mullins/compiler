@@ -36,7 +36,7 @@ import Network.HTTP.Client
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import Network.HTTP.Types.Header (Header, hAccept, hAcceptEncoding, hUserAgent)
 import Network.HTTP.Types.Method (Method, methodGet, methodPost)
-import qualified Network.HTTP.Client as Multi (RequestBody(RequestBodyLBS))
+import qualified Network.HTTP.Client as Multi (RequestBody(RequestBodyLBS, RequestBodyBS))
 import qualified Network.HTTP.Client.MultipartFormData as Multi
 
 import qualified Json.Encode as Encode
@@ -100,7 +100,7 @@ addDefaultHeaders headers =
 {-# NOINLINE userAgent #-}
 userAgent :: BS.ByteString
 userAgent =
-  BS.pack ("elm/0.19.0") -- ++ V.toChars V.compiler)
+  BS.pack ("elm/" ++ V.toChars V.compiler)
 
 
 accept :: BS.ByteString -> Header
@@ -241,4 +241,4 @@ jsonPart name filePath value =
 
 stringPart :: String -> String -> Multi.Part
 stringPart name string =
-  Multi.partBS  (String.fromString name) (BS.pack string)
+  Multi.partFileRequestBody  (String.fromString name) (String.fromString name) (Multi.RequestBodyBS $ BS.pack string)
