@@ -99,7 +99,7 @@ script:
     - |
       case "$BUILD" in
         linux)
-            docker run -v $HOME/.stack:/root/.stack -v $TRAVIS_BLD_DIR:/app -it musl-ghc
+            docker run -v $HOME/.stack:/root/.stack -v $TRAVIS_BUILD_DIR:/app -it musl-ghc
             tar zcvf binary-for-$BUILD.tar.gz ./elm
             ;;
         *)
