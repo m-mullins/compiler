@@ -88,6 +88,7 @@ install:
         linux)
             pushd docker
             docker build . -t musl-ghc
+            popd
             ;;
         *)
             stack --no-terminal --install-ghc build --only-dependencies
