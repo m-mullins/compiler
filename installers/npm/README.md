@@ -1,14 +1,48 @@
-npm install elm [![Travis build Status](https://travis-ci.org/elm-lang/elm-platform.svg?branch=master)](http://travis-ci.org/elm-lang/elm-platform) [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/6mcub79i04ianpm9/branch/master?svg=true)](https://ci.appveyor.com/project/rtfeldman/elm-platform/branch/master)
+[![Build Status](https://travis-ci.com/m-mullins/compiler.svg?branch=native-modules-0.19.1)](https://travis-ci.com/m-mullins/compiler)
 ===============
 
-Install the [Elm Platform](https://github.com/elm-lang/elm-platform) via [`npm`](https://www.npmjs.com).
+# Elm compiler + JS modules 
+This build adds javascript modules to the elm compiler
+
+# Example
+
+1. `elm init`
+1. Create src/Main.elm
+```
+module Main exposing(..)
+
+import Html exposing (..)
+import Elm.Kernel.JS
+
+log : String -> String
+log = Elm.Kernel.JS.log
+
+main = text <| log <| "HelloWorld"
+```
+1. Create src/Elm/Kernel/JS.js _note:_ the first comment is required (it can be empty)
+```
+/*
+
+*/
+
+function _JS_log(s) {
+    console.log(s);
+    return s;
+}
+```
+1. This show now compile `elm make src/Main.elm`
+1. Open the `index.html` and "HelloWorld" should be printed to the console
+1 The best place to see more js module examples is the [elm/core](https://github.com/elm/core/tree/1.0.2/src/Elm/Kernel) library.
+# Original elm docs: 
+
+Install the [Elm Platform + Mod](https://github.com/elm-lang/elm-platform) via [`npm`](https://www.npmjs.com).
 
 ## Installing
 
 Run this to get the binaries:
 
 ```
-$ npm install -g elm
+$ npm install -g elm-mods
 ```
 
 ## Installing behind a proxy server
@@ -17,14 +51,14 @@ If you are behind a proxy server, set the environment variable "HTTPS_PROXY".
 
 ```
 $ export HTTPS_PROXY=$YourProxyServer$
-$ npm install -g elm
+$ npm install -g elm-mods
 ```
 
 Or on Windows:
 
 ```
 $ set HTTPS_PROXY=$YourProxyServer$
-$ npm install -g elm
+$ npm install -g elm-mods
 ```
 
 ## Troubleshooting

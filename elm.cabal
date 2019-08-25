@@ -1,6 +1,6 @@
 
 Name: elm
-Version: 0.19.1
+Version: 0.19.1.1
 
 Synopsis:
     The `elm` command line interface.
@@ -25,7 +25,7 @@ Build-type: Simple
 
 source-repository head
     type:     git
-    location: git://github.com/elm/compiler.git
+    location: git://github.com/m-mullins/compiler.git
 
 
 Flag dev {
@@ -33,12 +33,20 @@ Flag dev {
   Default: False
 }
 
+Flag static {
+  Description: For production builds: statically link the binary
+  Default: False
+}
 
 Executable elm
     if flag(dev)
         ghc-options: -O0 -Wall -Werror
     else
-        ghc-options: -O2 -rtsopts -threaded "-with-rtsopts=-N -qg -A128m"
+        if flag(static)
+            ghc-options: -O2 -rtsopts -threaded "-with-rtsopts=-N -qg -A128m" -fPIC
+            ld-options: -static
+        else
+            ghc-options: -O2 -rtsopts -threaded "-with-rtsopts=-N -qg -A128m"
         -- add -eventlog for (elm make src/Main.elm +RTS -l; threadscope elm.eventlog)
         -- https://www.oreilly.com/library/view/parallel-and-concurrent/9781449335939/
 
