@@ -49,7 +49,7 @@ install:
             popd
             ;;
         *)
-            stack --no-terminal --install-ghc build --only-dependencies
+            #stack --no-terminal --install-ghc build --only-dependencies
             ;;
       esac
 
