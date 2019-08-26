@@ -21,6 +21,8 @@ matrix:
        - env: BUILD=win
          compiler: stack windows
          language: node_js
+         node_js:
+            - 12
          os: windows
 
 
