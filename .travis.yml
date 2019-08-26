@@ -84,12 +84,15 @@ install:
 
 script:
  - |
-   set -ex
    case "$BUILD" in
         mac)
+           echo "cd example"
            cd example
+           echo "npm install"
            npm install --save elm-mods
+           echo "elm init"
            echo 'Y' | npx elm init
+           echo "elm make"
            npx elm make src/Main.elm
            grep "_JS_log" index.html 
            cd -
@@ -103,5 +106,4 @@ script:
            popd
            ;;
    esac
-   set +ex
   
