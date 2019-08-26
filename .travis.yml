@@ -85,16 +85,16 @@ install:
 script:
  - |
    case "$BUILD" in
-        *)
-           pushd example
-           npm install --save elm-mods
-           echo 'Y' | npx elm init
-           npx elm make src/Main.elm
-           grep "_JS_log" index.html 
-           popd
-           ;;
-       win)
+        win)
            echo "npm exists?"
+           echo "npm exists?"
+           echo "npm exists?"
+           echo "npm exists?"
+           echo "npm exists?"
+           npm --version
+           npm --version
+           npm --version
+           npm --version
            pushd example
            npm install --save elm-mods
            echo 'Y' | npx elm init
@@ -102,5 +102,14 @@ script:
            grep "_JS_log" index.html 
            popd
            ;;
+       *)
+           pushd example
+           npm install --save elm-mods
+           echo 'Y' | npx elm init
+           npx elm make src/Main.elm
+           grep "_JS_log" index.html 
+           popd
+           ;;
+
    esac
   
