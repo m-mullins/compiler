@@ -20,7 +20,7 @@ matrix:
          os: osx
        - env: BUILD=win
          compiler: stack windows
-         language: bash
+         language: node_js
          os: windows
 
 
@@ -40,7 +40,7 @@ matrix:
 #   set +ex
      
 install:
-    - echo ">> trying only-dependencies $BUILD stack=$(which stack)"
+    # - echo ">> trying only-dependencies $BUILD stack=$(which stack)"
     - |
       case "$BUILD" in
         linux)
@@ -91,7 +91,9 @@ script:
            echo "npm exists?"
            echo "npm exists?"
            echo "npm exists?"
-           choco install nodejs
+           pwd
+           ls -l /c/ProgramData/chocolatey/bin
+           echo 'check for node'
            npm --version
            npm --version
            npm --version
