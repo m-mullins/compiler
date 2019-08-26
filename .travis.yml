@@ -91,6 +91,9 @@ script:
            echo "npm exists?"
            echo "npm exists?"
            echo "npm exists?"
+           choco install nodejs
+           npm --version
+           npm --version
            npm --version
            npm --version
            npm --version
