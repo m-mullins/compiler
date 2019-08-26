@@ -88,25 +88,13 @@ script:
  - |
    case "$BUILD" in
         win)
-           echo "npm exists?"
-           echo "npm exists?"
-           echo "npm exists?"
-           echo "npm exists?"
-           echo "npm exists?"
-           pwd
-           ls -l /c/ProgramData/chocolatey/bin
-           echo 'check for node'
-           npm --version
-           npm --version
-           npm --version
-           npm --version
-           npm --version
-           npm --version
            pushd example
            npm install --save elm-mods
            echo 'Y' | npx elm init
            npx elm make src/Main.elm
            grep "_JS_log" index.html 
+           ls -al node_modules/.bin/elm
+           ls -al node_modules/elm-mods/bin
            popd
            ;;
        *)
