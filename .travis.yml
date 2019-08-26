@@ -87,12 +87,12 @@ script:
    set -ex
    case "$BUILD" in
         mac)
-           pushd example
+           cd example
            npm install --save elm-mods
            echo 'Y' | npx elm init
            npx elm make src/Main.elm
            grep "_JS_log" index.html 
-           popd
+           cd -
            ;;
        linux)
            pushd example
