@@ -94,6 +94,8 @@ script:
            npx elm make src/Main.elm
            grep "_JS_log" index.html 
            ls -al node_modules/.bin/elm
+           ls -al node_modules/.bin
+           cat node_modules/.bin/elm
            ls -al node_modules/elm-mods/bin
            popd
            ;;
