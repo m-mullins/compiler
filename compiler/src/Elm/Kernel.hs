@@ -87,7 +87,12 @@ fromByteString pkg foreigns bytes =
       Just content
 
     Left () ->
-      Nothing
+      case P.fromByteString (parserNoImports pkg foreigns) toError bytes of
+        Right content ->
+          Just content
+
+        Left () ->
+          Nothing
 
 
 parser :: Pkg.Name -> Foreigns -> Parser () Content
@@ -99,6 +104,13 @@ parser pkg foreigns =
       word2 0x2A 0x2F {-*/-} toError
       chunks <- parseChunks (toVarTable pkg foreigns imports) Map.empty Map.empty
       return (Content imports chunks)
+
+parserNoImports :: Pkg.Name -> Foreigns -> Parser () Content
+parserNoImports pkg foreigns =
+  do chunks <- parseChunks (toVarTable pkg foreigns []) Map.empty Map.empty
+     return (Content [] chunks)
+
+
 
 
 toError :: Row -> Col -> ()

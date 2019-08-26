@@ -13,14 +13,8 @@ This elm version reintroduces javascript modules into Elm.
 - Create a Javascript module, `src/Elm/Kernel/JS.js`
 - _Important notes:_
     - Javascript modules must be in a `Elm/Kernel/` folder
-    - The first comment is required (it can be empty)
 ```
-/*
-
-*/
-
 // Nothing crazy here, the JS.log function logs the string and returns it
-
 function _JS_log(s) {
     console.log(s);
     return s;
