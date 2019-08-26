@@ -14,10 +14,10 @@ matrix:
        - env: BUILD=linux
          compiler: musl stack linux
          language: generic
-       #- env: BUILD=mac
-       #  compiler: stack mac
-       #  language: generic
-       #  os: osx
+       - env: BUILD=mac
+         compiler: stack mac
+         language: generic
+         os: osx
        #- env: BUILD=win
        #  compiler: stack windows
        #  language: bash
@@ -86,6 +86,14 @@ script:
  - |
    set -ex
    case "$BUILD" in
+        mac)
+           pushd example
+           npm install --save elm-mods
+           echo 'Y' | npx elm init
+           npx elm make src/Main.elm
+           grep "_JS_log" index.html 
+           popd
+           ;;
        linux)
            pushd example
            npm install --save elm-mods
