@@ -4,9 +4,7 @@
 
 ## Install
 
-* Use the npm package `elm-mods`
-* Or grab the binaries from: https://github.com/m-mullins/compiler/releases
-* :warn: I pulled the package and binaries because I jumped the gun on the actual 0.19.1 elm release
+* I pulled the npm package and binaries because I jumped the gun on the actual 0.19.1 elm release
 * To build manually install stack: https://docs.haskellstack.org/en/stable/README/#how-to-install then:
 ```
 git clone ..
